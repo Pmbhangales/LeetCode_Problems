@@ -1,0 +1,75 @@
+16) 847. Shortest Path Visiting All Nodes
+
+Difficulty Level: Hard
+
+
+You have an undirected, connected graph of n nodes labeled from 0 to n - 1. You are given an array graph where graph[i] is a list of all the nodes connected with node i by an edge.
+
+Return the length of the shortest path that visits every node. You may start and stop at any node, you may revisit nodes multiple times, and you may reuse edges.
+
+ 
+
+Example 1:
+
+
+Input: graph = [[1,2,3],[0],[0],[0]]
+Output: 4
+Explanation: One possible path is [1,0,2,0,3]
+Example 2:
+
+
+Input: graph = [[1],[0,2,4],[1,3,4],[2],[1,2]]
+Output: 4
+Explanation: One possible path is [0,1,4,2,3]
+ 
+
+Constraints:
+
+n == graph.length
+1 <= n <= 12
+0 <= graph[i].length < n
+graph[i] does not contain i.
+If graph[a] contains b, then graph[b] contains a.
+The input graph is always connected.
+
+
+
+Solution
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+class Solution {
+    public int shortestPathLength(int[][] graph) {
+        int n = graph.length;
+        int targetMask = (1 << n) - 1; // Create a mask with all bits set to 1 (representing all nodes visited).
+        
+        Queue<int[]> queue = new LinkedList<>();
+        boolean[][] visited = new boolean[n][1 << n];
+        
+        // Initialize the BFS queue with all nodes as starting points.
+        for (int i = 0; i < n; i++) {
+            queue.offer(new int[]{i, 1 << i, 0}); // Format: [current node, visited nodes bitmask, distance]
+            visited[i][1 << i] = true;
+        }
+        
+        while (!queue.isEmpty()) {
+            int[] curr = queue.poll();
+            int currentNode = curr[0];
+            int visitedMask = curr[1];
+            int distance = curr[2];
+            
+            if (visitedMask == targetMask) {
+                return distance;
+            }
+            
+            for (int neighbor : graph[currentNode]) {
+                int newVisitedMask = visitedMask | (1 << neighbor);
+                
+                if (!visited[neighbor][newVisitedMask]) {
+                    queue.offer(new int[]{neighbor, newVisitedMask, distance + 1});
+                    visited[neighbor][newVisitedMask] = true;
+                }
+            }
+        }
+        
+        return -1; 
+    }
+}
